@@ -1,0 +1,24 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <parameters>
+        <parameter key="funstaff_redirect.redirect_manager.class">Funstaff\Bundle\RedirectBundle\Manager\RedirectManager</parameter>
+        <parameter key="funstaff_redirect.redirect_listener.class">Funstaff\Bundle\RedirectBundle\EventListener\RedirectListener</parameter>
+    </parameters>
+
+    <services>
+        <service id="funstaff_redirect.redirect_manager" class="%funstaff_redirect.redirect_manager.class%">
+            <argument type="service" id="doctrine.orm.entity_manager" />
+            <argument>%funstaff_redirect.redirect_class%</argument>
+            <argument>%funstaff_redirect.enabled_stat%</argument>
+        </service>
+
+        <service id="funstaff_redirect.redirect_listener" class="%funstaff_redirect.redirect_listener.class%">
+            <tag name="kernel.event_listener" event="kernel.exception" method="onCoreException" />
+            <argument type="service" id="funstaff_redirect.redirect_manager" />
+        </service>
+    </services>
+</container>
