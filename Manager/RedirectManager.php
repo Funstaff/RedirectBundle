@@ -49,20 +49,27 @@ class RedirectManager
      */
     public function getResponseFromRequest(Request $request)
     {
-        $source = rtrim($request->getRequestUri());
+        $baseUrl = rtrim($request->getBaseUrl(), '/');
+        $source = ltrim($request->getPathInfo(), '/');
 
         $redirect = $this->getRepository()
                         ->getDestinationFromSource($source);
 
-        if ($redirect && $this->isStatEnabled()) {
+        if (!$redirect) {
+            return;
+        }
+
+        if ($this->isStatEnabled()) {
             $this->updateStat($redirect);
         }
 
-        return ($redirect) ?
-                new RedirectResponse(
-                    $redirect->getDestination(),
-                    $redirect->getStatusCode()
-                ) : null;
+        $destination = sprintf(
+            '%s/%s',
+            $baseUrl,
+            $redirect->getDestination()
+        );
+
+        return new RedirectResponse($destination, $redirect->getStatusCode());
     }
 
     /**
