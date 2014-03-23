@@ -49,8 +49,11 @@ class RedirectManager
      */
     public function getResponseFromRequest(Request $request)
     {
-        $baseUrl = rtrim($request->getBaseUrl(), '/');
-        $source = ltrim($request->getPathInfo(), '/');
+        $baseUrl = $request->getBaseUrl();
+        $requestUri = $request->getRequestUri();
+
+        $source = mb_eregi_replace($baseUrl, '', $requestUri);
+        $source = ltrim($source, '/');
 
         $redirect = $this->getRepository()
                         ->getDestinationFromSource($source);
