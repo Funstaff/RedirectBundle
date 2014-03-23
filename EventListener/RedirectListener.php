@@ -32,8 +32,9 @@ class RedirectListener
             return;
         }
 
+        $exception = $event->getException();
         $request = $event->getRequest();
-        if ($request->getMethod() != 'GET') {
+        if (404 != $exception->getStatusCode() || 'GET' != $request->getMethod()) {
             return;
         }
 
