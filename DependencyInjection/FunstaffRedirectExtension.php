@@ -26,5 +26,6 @@ class FunstaffRedirectExtension extends Extension
         $loader->load('services.xml');
         $container->setParameter('funstaff_redirect.redirect_class', $config['redirect_class']);
         $container->setParameter('funstaff_redirect.enabled_stat', $config['enabled_stat']);
+        $container->setParameter('funstaff_redirect.export_path', $config['export_path']);
     }
 }

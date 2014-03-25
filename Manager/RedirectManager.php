@@ -7,6 +7,11 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Funstaff\Bundle\RedirectBundle\Entity\Redirect;
 
+use Symfony\Component\Serializer\Serializer;
+use Symfony\Component\Serializer\Encoder\XmlEncoder;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer;
+
 /**
  * RedirectManager.
  *
@@ -73,6 +78,46 @@ class RedirectManager
         );
 
         return new RedirectResponse($destination, $redirect->getStatusCode());
+    }
+
+    /**
+     * Export
+     */
+    public function export($path, $statistic = false)
+    {
+        $directory = dirname($path);
+        if (!is_writable($directory)) {
+            throw new \Exception(sprintf(
+                "The path %s isn't writable",
+                $directory
+            ));
+        }
+        $options = array('json_encode_options' => JSON_PRETTY_PRINT);
+        $records = $this->getRepository()->findAll();
+        $serializer = $this->initializeSerializer($statistic);
+        $data = $serializer->serialize($records, 'json', $options);
+        file_put_contents($path, $data);
+    }
+
+    /**
+     * initializeSerializer
+     *
+     * @return Symfony\Component\Serializer\Serializer
+     */
+    private function initializeSerializer($statistic)
+    {
+        $ignoredFields = array('id', 'createdAt', 'updatedAt');
+        $encoders = array(new JsonEncoder());
+        $normalizer = new GetSetMethodNormalizer();
+        if (!$statistic) {
+            $ignoredFields = array_merge(
+                $ignoredFields,
+                array('lastAccessed', 'statCount')
+            );
+        }
+        $normalizer->setIgnoredAttributes($ignoredFields);
+
+        return new Serializer(array($normalizer), $encoders);
     }
 
     /**

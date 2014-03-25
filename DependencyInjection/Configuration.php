@@ -26,6 +26,10 @@ class Configuration implements ConfigurationInterface
                     ->defaultValue('Funstaff\Bundle\RedirectBundle\Entity\Redirect')
                 ->end()
                 ->booleanNode('enabled_stat')->defaultFalse()->end()
+                ->scalarNode('export_path')->defaultValue(sprintf(
+                    '%s'.DIRECTORY_SEPARATOR.'export'.DIRECTORY_SEPARATOR.'redirect.json',
+                    '%kernel.root_dir%'
+                ))->end()
             ->end()
         ;
 
