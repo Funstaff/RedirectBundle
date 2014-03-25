@@ -13,6 +13,7 @@
     "require": {
         "symfony/framework-bundle": "~2.3",
         "symfony/doctrine-bridge": "~2.3",
+        "symfony/serializer": "~2.3",
         "doctrine/orm": ">=2.2.3,<2.4-dev",
         "gedmo/doctrine-extensions": "2.3.*",
     },
