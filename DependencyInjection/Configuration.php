@@ -27,7 +27,7 @@ class Configuration implements ConfigurationInterface
                 ->end()
                 ->booleanNode('enabled_stat')->defaultFalse()->end()
                 ->scalarNode('export_path')->defaultValue(sprintf(
-                    '%s'.DIRECTORY_SEPARATOR.'export'.DIRECTORY_SEPARATOR.'redirect.json',
+                    '%s'.DIRECTORY_SEPARATOR.'export',
                     '%kernel.root_dir%'
                 ))->end()
             ->end()

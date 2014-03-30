@@ -9,17 +9,17 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * RedirectExportCommand.
+ * RedirectImportCommand.
  *
  * @author Bertrand Zuchuat <bertrand.zuchuat@gmail.com>
  */
-class RedirectExportCommand extends ContainerAwareCommand
+class RedirectImportCommand extends ContainerAwareCommand
 {
     protected function configure()
     {
         $this
-            ->setName('funstaff:redirect:export')
-            ->setDescription('Export redirect data')
+            ->setName('funstaff:redirect:import')
+            ->setDescription('Import redirect data')
             ->setDefinition(array(
                 new InputArgument('filename', InputArgument::OPTIONAL, 'filename', 'redirect.csv')))
         ;
@@ -35,32 +35,20 @@ class RedirectExportCommand extends ContainerAwareCommand
             $container->getParameter('funstaff_redirect.export_path'),
             $input->getArgument('filename')
         );
-        $folder = dirname($exportPath);
-        if (!is_readable($folder)) {
-            if (!$dialog->askConfirmation(
-                    $output,
-                    sprintf(
-                        '<question>The destination folder "%s" doesn\'t exist. Would you like to create?</question>',
-                        $folder
-                    ),
-                    false
-                )) {
-                return;
-            } else {
-                $container->get('filesystem')->mkdir($folder, 0777);
-                $output->writeln(sprintf(
-                    'Create destination folder "<comment>%s</comment>"',
-                    $folder
-                ));
-            }
+        
+        if (!file_exists($exportPath)) {
+            throw new \InvalidArgumentException(sprintf(
+                'The file "%s" doesn\'t exist.',
+                $exportPath
+            ));
         }
 
         $container
             ->get('funstaff_redirect.redirect_manager')
-            ->export($exportPath);
+            ->import($exportPath);
 
         $output->writeln(sprintf(
-            'Export data to "<comment>%s</comment>"',
+            'Import data to "<comment>%s</comment>"',
             $exportPath
         ));
     }

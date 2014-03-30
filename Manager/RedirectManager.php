@@ -6,11 +6,7 @@ use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Funstaff\Bundle\RedirectBundle\Entity\Redirect;
-
-use Symfony\Component\Serializer\Serializer;
-use Symfony\Component\Serializer\Encoder\XmlEncoder;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer;
+use Funstaff\Bundle\RedirectBundle\Serializer\Serializer;
 
 /**
  * RedirectManager.
@@ -23,6 +19,11 @@ class RedirectManager
      * @var ObjectManager
      */
     private $om;
+
+    /**
+     * @var Serializer
+     */
+    private $serializer;
 
     /**
      * @var boolean
@@ -38,9 +39,10 @@ class RedirectManager
      * @param ObjectManager $om
      * @param string        $class
      */
-    public function __construct(ObjectManager $om, $class, $statEnabled = false)
+    public function __construct(ObjectManager $om, Serializer $serializer, $class, $statEnabled = false)
     {
         $this->om = $om;
+        $this->serializer = $serializer;
         $this->statEnabled = (bool) $statEnabled;
         $this->repository = $om->getRepository($class);
     }
@@ -82,42 +84,59 @@ class RedirectManager
 
     /**
      * Export
+     *
+     * @param string Full path of file
      */
-    public function export($path, $statistic = false)
+    public function export($path)
     {
-        $directory = dirname($path);
-        if (!is_writable($directory)) {
-            throw new \Exception(sprintf(
-                "The path %s isn't writable",
-                $directory
-            ));
-        }
-        $options = array('json_encode_options' => JSON_PRETTY_PRINT);
         $records = $this->getRepository()->findAll();
-        $serializer = $this->initializeSerializer($statistic);
-        $data = $serializer->serialize($records, 'json', $options);
+        $data = $this->serializer->serialize($records, 'text');
         file_put_contents($path, $data);
     }
 
     /**
-     * initializeSerializer
+     * Import
      *
-     * @return Symfony\Component\Serializer\Serializer
+     * @param string Full path of file
      */
-    private function initializeSerializer($statistic)
+    public function import($path)
     {
-        $ignoredFields = array('id', 'createdAt', 'updatedAt');
-        $encoders = array(new JsonEncoder());
-        $normalizer = new GetSetMethodNormalizer();
-        if (!$statistic) {
-            $ignoredFields = array_merge(
-                $ignoredFields,
-                array('lastAccessed', 'statCount')
-            );
+        $content = file_get_contents($path);
+        $lines = explode("\n", $content);
+        if (count($lines) > 0) {
+            $keys = explode("\t", $lines[0]);
+            unset($lines[0]);
         }
-        $normalizer->setIgnoredAttributes($ignoredFields);
 
-        return new Serializer(array($normalizer), $encoders);
+        foreach ($lines as $line) {
+            $datas = explode("\t", $line);
+            $values = array();
+            foreach ($datas as $id => $data) {
+                $values[$keys[$id]] = $data;
+            }
+            $redirect = $this->serializer->deserialize(
+                        $values,
+                        'Funstaff\Bundle\RedirectBundle\Entity\Redirect',
+                        'text'
+                    );
+            $record = $this->getRepository()
+                        ->findOneBy(array('source' => $redirect->getSource()));
+            if ($record) {
+                $record
+                    ->setDestination($redirect->getDestination())
+                    ->setStatusCode($redirect->getStatusCode());
+            } else {
+                $record = new Redirect();
+                $record
+                    ->setSource($redirect->getSource())
+                    ->setDestination($redirect->getDestination())
+                    ->setStatusCode($redirect->getStatusCode());
+                $this->om->persist($record);
+            }
+        }
+        if ($this->om->getUnitOfWork()->size()) {
+            $this->om->flush();
+        }
     }
 
     /**
