@@ -4,6 +4,7 @@ namespace Funstaff\Bundle\RedirectBundle\EventListener;
 
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Funstaff\Bundle\RedirectBundle\Manager\RedirectManager;
 
 /**
@@ -33,6 +34,10 @@ class RedirectListener
         }
 
         $exception = $event->getException();
+        if (!$exception instanceOf NotFoundHttpException) {
+            return;
+        }
+
         $request = $event->getRequest();
         if (404 != $exception->getStatusCode() || 'GET' != $request->getMethod()) {
             return;
