@@ -28,7 +28,7 @@ class RedirectRequestListener
 
     public function onKernelRequest(GetResponseEvent $event)
     {
-        if (HttpKernelInterface::MASTER_REQUEST !== $event->getRequestType()) {
+        if (HttpKernelInterface::SUB_REQUEST !== $event->getRequestType()) {
             return;
         }
 
