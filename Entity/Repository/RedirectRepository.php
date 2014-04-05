@@ -29,4 +29,15 @@ class RedirectRepository extends EntityRepository
                 ->getQuery()
                 ->getOneOrNullResult();
     }
+
+    /**
+     * Get All Order By Source
+     *
+     * @return Doctrine\ORM\QueryBuilder
+     */
+    public function getAllOrderBySource()
+    {
+        return $this->createQueryBuilder('r')
+                ->orderBy('r.source');
+    }
 }

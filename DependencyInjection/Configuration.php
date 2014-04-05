@@ -20,16 +20,32 @@ class Configuration implements ConfigurationInterface
         $treeBuilder = new TreeBuilder();
         $rootNode = $treeBuilder->root('funstaff_redirect');
 
+        $supportedlistener = array('request', 'exception');
+
         $rootNode
             ->children()
-                ->scalarNode('redirect_class')
-                    ->defaultValue('Funstaff\Bundle\RedirectBundle\Entity\Redirect')
+                ->scalarNode('listener')
+                    ->validate()
+                        ->ifNotInArray($supportedlistener)
+                        ->thenInvalid('Listener type %s is not supported. Please choose one of '.json_encode($supportedlistener))
+                    ->end()
+                    ->defaultValue('exception')
+                    ->cannotBeEmpty()
                 ->end()
-                ->booleanNode('enabled_stat')->defaultFalse()->end()
-                ->scalarNode('export_path')->defaultValue(sprintf(
-                    '%s'.DIRECTORY_SEPARATOR.'export',
-                    '%kernel.root_dir%'
-                ))->end()
+                ->scalarNode('layout')
+                    ->defaultValue('::base.html.twig')
+                    ->cannotBeEmpty()
+                ->end()
+                ->booleanNode('enabled_stat')
+                    ->defaultFalse()
+                ->end()
+                ->scalarNode('export_path')
+                    ->defaultValue(sprintf(
+                        '%s'.DIRECTORY_SEPARATOR.'export',
+                        '%kernel.root_dir%'
+                    ))
+                    ->cannotBeEmpty()
+                ->end()
             ->end()
         ;
 

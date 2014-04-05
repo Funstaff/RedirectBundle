@@ -8,11 +8,11 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Funstaff\Bundle\RedirectBundle\Manager\RedirectManager;
 
 /**
- * RedirectListener.
+ * RedirectExceptionListener.
  *
  * @author Bertrand Zuchuat <bertrand.zuchuat@gmail.com>
  */
-class RedirectListener
+class RedirectExceptionListener
 {
     /**
      * @var RedirectManager
