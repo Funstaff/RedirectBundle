@@ -47,19 +47,19 @@ class Redirect
     /**
      * @ORM\Column(name="is_enabled", type="boolean")
      */
-    protected $isEnabled;
+    protected $enabled;
 
     /**
      * @ORM\Column(name="source", type="string", length=255, unique=true)
      * @Assert\NotNull()
-     * @Assert\Range(max=255)
+     * @Assert\length(max=255)
      */
     protected $source;
 
     /**
      * @ORM\Column(name="destination", type="string", length=255)
      * @Assert\NotNull()
-     * @Assert\Range(max=255)
+     * @Assert\length(max=255)
      */
     protected $destination;
 
@@ -83,7 +83,7 @@ class Redirect
      */
     public function __construct()
     {
-        $this->isEnabled = true;
+        $this->enabled = true;
         $this->status = self::STATUS_FOUND;
         $this->statCount = 0;
     }
@@ -119,15 +119,15 @@ class Redirect
     }
 
     /**
-     * Set Is Enabled
+     * Set Enabled
      *
-     * @param boolean $isEnabled
+     * @param boolean $enabled
      *
      * @return Redirect
      */
-    public function setIsEnabled($isEnabled = true)
+    public function setEnabled($enabled = true)
     {
-        $this->isEnabled = (boolean) $isEnabled;
+        $this->enabled = (boolean) $enabled;
 
         return $this;
     }
@@ -139,7 +139,7 @@ class Redirect
      */
     public function isEnabled()
     {
-        return $this->isEnabled;
+        return $this->enabled;
     }
 
     /**
