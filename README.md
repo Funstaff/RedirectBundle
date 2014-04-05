@@ -19,6 +19,11 @@ public function registerBundles()
 }
 ```
 
+### Create table redirect in database
+``` bash
+$ php app/console doctrine:schema:update --force
+```
+
 ### app/config/routing.yml
 ``` yaml
 funstaff_redirect:
