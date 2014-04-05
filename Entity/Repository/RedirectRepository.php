@@ -21,7 +21,7 @@ class RedirectRepository extends EntityRepository
     public function getDestinationFromSource($source)
     {
         return $this->createQueryBuilder('r')
-                ->where('r.source = :source AND r.isEnabled = :enabled')
+                ->where('r.source = :source AND r.enabled = :enabled')
                 ->setParameters(array(
                     'source' => $source,
                     'enabled' => true
