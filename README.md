@@ -1,6 +1,8 @@
 RedirectBundle
 ==============
 
+Master: [![Build Status](https://travis-ci.org/Funstaff/RedirectBundle.svg?branch=master)](https://travis-ci.org/Funstaff/RedirectBundle)
+
 This is a redirect system for symfony2.
 
 This bundle use the framework css [getuikit](http://getuikit.com/ "getuikit")
