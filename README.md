@@ -3,6 +3,8 @@ RedirectBundle
 
 This is a redirect system for symfony2.
 
+This bundle use the framework css [getuikit](http://getuikit.com/ "getuikit")
+
 ### Enable the bundle
 Enable the bundle in the kernel:
 
