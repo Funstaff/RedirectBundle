@@ -5,6 +5,7 @@ namespace Funstaff\Bundle\RedirectBundle\Manager;
 use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Funstaff\Bundle\RedirectBundle\Entity\Redirect;
 use Funstaff\Bundle\RedirectBundle\Serializer\Serializer;
 
@@ -41,8 +42,12 @@ class RedirectManager
     private $repository;
 
     /**
+     * Constructor
+     *
      * @param ObjectManager $om
+     * @param Serializer    $serializer
      * @param string        $class
+     * @param boolean       $statEnabled
      */
     public function __construct(ObjectManager $om, Serializer $serializer, $class, $statEnabled = false)
     {
@@ -86,6 +91,33 @@ class RedirectManager
         );
 
         return new RedirectResponse($destination, $redirect->getStatusCode());
+    }
+
+    /**
+     * Save
+     *
+     * @param Funstaff\Bundle\RedirectBundle\Entity\Redirect $redirect
+     */
+    public function save(Redirect $redirect)
+    {
+        $this->om->persist($redirect);
+        $this->om->flush();
+    }
+
+    /**
+     * Delete
+     *
+     * @param integer $id
+     */
+    public function delete($id)
+    {
+        $record = $this->repository->find($id);
+        if (!$record) {
+            throw new NotFoundHttpException('Unable to find Redirect entity.');
+        }
+
+        $this->om->remove($record);
+        $this->om->flush();
     }
 
     /**
@@ -140,9 +172,7 @@ class RedirectManager
                 $this->om->persist($record);
             }
         }
-        if ($this->om->getUnitOfWork()->size()) {
-            $this->om->flush();
-        }
+        $this->om->flush();
     }
 
     /**
@@ -155,8 +185,7 @@ class RedirectManager
         $redirect
             ->setLastAccessed(new \DateTime())
             ->increaseStatCount();
-        $this->om->persist($redirect);
-        $this->om->flush();
+        $this->save($redirect);
     }
 
     /**
@@ -168,7 +197,6 @@ class RedirectManager
     {
         return $this->class;
     }
-
 
     /**
      * Get Repository

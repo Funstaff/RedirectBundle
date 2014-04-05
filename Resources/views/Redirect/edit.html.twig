@@ -1,0 +1,17 @@
+{% trans_default_domain 'Redirect' %}
+{% extends 'FunstaffRedirectBundle::layout.html.twig' %}
+{% block title %}{{ 'page.title.edit'|trans }}{% endblock %}
+{% block funstaff_redirect_block %}
+<h1>{{ 'page.title.edit'|trans }}</h1>
+{{ form_start(form, {'action': path('funstaff_redirect_edit', {'id': form.vars.value.id}), 'method': 'PUT', 'attr': {'novalidate': 'novalidate', 'class': 'uk-form uk-form-horizontal'}}) }}
+{{ form_errors(form) }}
+{% include 'FunstaffRedirectBundle:Redirect:form.html.twig' with {'form': form} only %}
+<div class="uk-form-row">
+    <input class="uk-button uk-button-primary" type="submit" value="{{ 'form.button.modify'|trans() }}" />
+    {{ form_start(formDelete, {'action': path('funstaff_redirect_delete', {'id': form.vars.value.id}), 'method': 'DELETE' })}}
+        <input class="uk-button uk-button-danger" type="submit" value="{{ 'form.button.delete'|trans() }}" />
+    {{ form_end(formDelete) }}
+    <a class="uk-button" href="{{ path('funstaff_redirect_index') }}">{{ 'form.button.backList'|trans }}</a>
+</div>
+{{ form_end(form) }}
+{% endblock %}

@@ -1,0 +1,17 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <parameters>
+        <parameter key="funstaff_redirect.redirect_type.class">Funstaff\Bundle\RedirectBundle\Form\Type\RedirectType</parameter>
+    </parameters>
+
+    <services>
+        <service id="funstaff_redirect.redirect_type" class="%funstaff_redirect.redirect_type.class%">
+            <argument>%funstaff_redirect.entity_redirect.class%</argument>
+            <argument type="service" id="translator" />
+        </service>
+    </services>
+</container>

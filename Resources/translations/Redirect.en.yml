@@ -1,0 +1,26 @@
+field:
+    source:         "Source"
+    destination:    "Target"
+    statusCode:     "Redirect status"
+    lastAccessed:   "Last access"
+    statCount:      "Redirect count"
+    enabled:        "Enabled"
+
+form:
+    button:
+        add:        "Add"
+        backList:   "Back to the list"
+        delete:     "Delete"
+        modify:     "Save"
+        new:        "New"
+
+page:
+    title:
+        add:    "Redirection: add"
+        edit:   "Redirection: edit"
+        index:  "List of redirection"
+
+status:
+    301:    "Moved Permanently (301)"
+    307:    "Temporary Redirect (307)"
+    308:    "Permanent Redirect (308)"

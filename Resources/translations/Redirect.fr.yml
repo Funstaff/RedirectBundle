@@ -1,0 +1,26 @@
+field:
+    source:         "Source"
+    destination:    "Destination"
+    statusCode:     "Code de redirection"
+    lastAccessed:   "Date dernier accès"
+    statCount:      "Nbre de redirection"
+    enabled:        "Activé"
+
+form:
+    button:
+        add:        "Ajouter"
+        backList:   "Retour à la liste"
+        delete:     "Supprimer"
+        modify:     "Modifier"
+        new:        "Nouveau"
+
+page:
+    title:
+        add:    "Redirection: Ajout"
+        edit:   "Redirection: édition"
+        index:  "Liste des redirections"
+
+status:
+    301:    "Déplacement permanent (301)"
+    307:    "Redirection temporaire (307)"
+    308:    "Redirection permanente (308)"
