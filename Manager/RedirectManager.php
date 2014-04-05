@@ -3,11 +3,14 @@
 namespace Funstaff\Bundle\RedirectBundle\Manager;
 
 use Doctrine\Common\Persistence\ObjectManager;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Funstaff\Bundle\RedirectBundle\Entity\Redirect;
 use Funstaff\Bundle\RedirectBundle\Serializer\Serializer;
+use Funstaff\Bundle\RedirectBundle\FunstaffRedirectEvents;
+use Funstaff\Bundle\RedirectBundle\Event\RedirectEvent;
 
 /**
  * RedirectManager.
@@ -20,6 +23,11 @@ class RedirectManager
      * @var ObjectManager
      */
     private $om;
+
+    /**
+     * @var EventDispatcherInterface
+     */
+    private $dispatcher;
 
     /**
      * @var Serializer
@@ -49,9 +57,10 @@ class RedirectManager
      * @param string        $class
      * @param boolean       $statEnabled
      */
-    public function __construct(ObjectManager $om, Serializer $serializer, $class, $statEnabled = false)
+    public function __construct(ObjectManager $om, EventDispatcherInterface $dispatcher, Serializer $serializer, $class, $statEnabled = false)
     {
         $this->om = $om;
+        $this->dispatcher = $dispatcher;
         $this->serializer = $serializer;
         $this->class = $class;
         $this->statEnabled = (bool) $statEnabled;
@@ -88,6 +97,12 @@ class RedirectManager
             '%s/%s',
             $baseUrl,
             $redirect->getDestination()
+        );
+
+        $event = new RedirectEvent($redirect, $request);
+        $this->dispatcher->dispatch(
+            FunstaffRedirectEvents::BEFORE_REDIRECT,
+            $event
         );
 
         return new RedirectResponse($destination, $redirect->getStatusCode());

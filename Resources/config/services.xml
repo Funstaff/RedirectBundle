@@ -16,6 +16,7 @@
         <service id="funstaff_redirect.serializer" class="%funstaff_redirect.serializer.class%" public="false" />
         <service id="funstaff_redirect.redirect_manager" class="%funstaff_redirect.redirect_manager.class%">
             <argument type="service" id="doctrine.orm.entity_manager" />
+            <argument type="service" id="event_dispatcher" />
             <argument type="service" id="funstaff_redirect.serializer" />
             <argument>%funstaff_redirect.entity_redirect.class%</argument>
             <argument>%funstaff_redirect.enabled_stat%</argument>
