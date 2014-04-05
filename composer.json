@@ -1,7 +1,7 @@
 {
     "name": "funstaff/redirect-bundle",
-    "description": "Redirect bundle capture exception and redirect to another url if the destination url exist",
-    "keywords": [],
+    "description": "Redirect bundle catch request url and redirect to another url if the destination url exist",
+    "keywords": ["redirection", "request", "exception"],
     "type": "symfony-bundle",
     "license": "MIT",
     "authors": [
