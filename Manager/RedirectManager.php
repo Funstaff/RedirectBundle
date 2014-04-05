@@ -26,6 +26,11 @@ class RedirectManager
     private $serializer;
 
     /**
+     * @var classname
+     */
+    private $class;
+
+    /**
      * @var boolean
      */
     private $statEnabled;
@@ -43,6 +48,7 @@ class RedirectManager
     {
         $this->om = $om;
         $this->serializer = $serializer;
+        $this->class = $class;
         $this->statEnabled = (bool) $statEnabled;
         $this->repository = $om->getRepository($class);
     }
@@ -116,7 +122,7 @@ class RedirectManager
             }
             $redirect = $this->serializer->deserialize(
                         $values,
-                        'Funstaff\Bundle\RedirectBundle\Entity\Redirect',
+                        $this->getClass(),
                         'text'
                     );
             $record = $this->getRepository()
@@ -152,6 +158,17 @@ class RedirectManager
         $this->om->persist($redirect);
         $this->om->flush();
     }
+
+    /**
+     * Get Class
+     *
+     * @return Fullpath of class
+     */
+    public function getClass()
+    {
+        return $this->class;
+    }
+
 
     /**
      * Get Repository
