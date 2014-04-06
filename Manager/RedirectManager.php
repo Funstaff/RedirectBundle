@@ -11,6 +11,8 @@ use Funstaff\Bundle\RedirectBundle\Entity\Redirect;
 use Funstaff\Bundle\RedirectBundle\Serializer\Serializer;
 use Funstaff\Bundle\RedirectBundle\FunstaffRedirectEvents;
 use Funstaff\Bundle\RedirectBundle\Event\RedirectEvent;
+use Funstaff\Bundle\RedirectBundle\Exception\FileLoaderException;
+use Funstaff\Bundle\RedirectBundle\Exception\FieldMissingException;
 
 /**
  * RedirectManager.
@@ -154,11 +156,37 @@ class RedirectManager
      */
     public function import($path)
     {
+        if (!file_exists($path)) {
+            throw new FileLoaderException(sprintf(
+                'The file "%s" doesn\'t exist.',
+                $path
+            ));
+        }
+
         $content = file_get_contents($path);
         $lines = explode("\n", $content);
-        if (count($lines) > 0) {
-            $keys = explode("\t", $lines[0]);
-            unset($lines[0]);
+        if (count($lines) == 0) {
+            throw new FileLoaderException('Empty file');
+        }
+
+        /* Extract columns */
+        $keys = explode("\t", $lines[0]);
+        unset($lines[0]);
+
+        /* Catch if source column exist in header */
+        if (!in_array('source', $keys)) {
+            throw new FieldMissingException('Missing source column');
+        }
+
+        /* Check fields */
+        $metadata = $this->om->getClassMetadata($this->class);
+        foreach ($keys as $key) {
+            if (!$metadata->hasField($key)) {
+                throw new FieldMissingException(sprintf(
+                    'The column with name "%s" does not exist.',
+                    $key
+                ));
+            }
         }
 
         foreach ($lines as $line) {

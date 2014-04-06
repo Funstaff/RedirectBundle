@@ -46,3 +46,30 @@ funstaff_redirect:
 ```
 
 If you would like to redirect on request, change the listener parameter to "request".
+
+### Export/Import
+Export:
+
+``` bash
+$ php app/console funstaff:redirect:export [filename]
+```
+Default filename is redirect.csv
+
+Import:
+
+``` bash
+$ php app/console funstaff:redirect:import [filename]
+```
+Default filename is redirect.csv
+
+Default export path is: %kernel.root_dir%/export
+
+If you would like to change the default path, add parameter "export_path" in your configuration.
+
+File structure:
+```
+source[tab]destination[tab]statusCode[tab]enabled
+foo[tab]bar[tab]307[tab]1
+```
+
+The field source is mandatory

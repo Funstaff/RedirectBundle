@@ -137,6 +137,16 @@ class Redirect
      *
      * @return boolean
      */
+    public function getEnabled()
+    {
+        return $this->enabled;
+    }
+
+    /**
+     * Get Is Enabled
+     *
+     * @return boolean
+     */
     public function isEnabled()
     {
         return $this->enabled;

@@ -35,13 +35,6 @@ class RedirectImportCommand extends ContainerAwareCommand
             $container->getParameter('funstaff_redirect.export_path'),
             $input->getArgument('filename')
         );
-        
-        if (!file_exists($exportPath)) {
-            throw new \InvalidArgumentException(sprintf(
-                'The file "%s" doesn\'t exist.',
-                $exportPath
-            ));
-        }
 
         $container
             ->get('funstaff_redirect.redirect_manager')
