@@ -60,7 +60,7 @@ class RedirectType extends AbstractType
     {
         $resolver->setDefaults(array(
             'data_class' => $this->class,
-            'intention'  => 'redirectq'
+            'intention'  => 'redirect'
         ));
     }
 
