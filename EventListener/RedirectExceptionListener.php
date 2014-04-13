@@ -29,10 +29,6 @@ class RedirectExceptionListener
 
     public function onCoreException(GetResponseForExceptionEvent $event)
     {
-        if (HttpKernelInterface::MASTER_REQUEST !== $event->getRequestType()) {
-            return;
-        }
-
         $exception = $event->getException();
         if (!$exception instanceOf NotFoundHttpException) {
             return;
