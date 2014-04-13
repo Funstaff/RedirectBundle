@@ -6,6 +6,7 @@ use Funstaff\Bundle\RedirectBundle\Tests\Csv\AbstractCsvTest;
 use Funstaff\Bundle\RedirectBundle\Csv\CsvImporter;
 use Funstaff\Bundle\RedirectBundle\Exception\FileLoaderException;
 use Funstaff\Bundle\RedirectBundle\Exception\FieldMissingException;
+use Funstaff\Bundle\RedirectBundle\Entity\Redirect;
 
 /**
  * CsvImporterTest.
@@ -84,9 +85,8 @@ class CsvImporterTest extends AbstractCsvTest
             if ('bar' !== $value['source']) {
                 return;
             }
-            $class = $this->getClass();
 
-            return new $class();
+            return new Redirect();
         };
 
         $repo->expects($this->any())
