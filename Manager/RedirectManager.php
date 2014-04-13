@@ -7,12 +7,11 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Funstaff\Bundle\RedirectBundle\Csv\CsvImporter;
+use Funstaff\Bundle\RedirectBundle\Csv\CsvExporter;
 use Funstaff\Bundle\RedirectBundle\Entity\Redirect;
-use Funstaff\Bundle\RedirectBundle\Serializer\Serializer;
 use Funstaff\Bundle\RedirectBundle\FunstaffRedirectEvents;
 use Funstaff\Bundle\RedirectBundle\Event\RedirectEvent;
-use Funstaff\Bundle\RedirectBundle\Exception\FileLoaderException;
-use Funstaff\Bundle\RedirectBundle\Exception\FieldMissingException;
 
 /**
  * RedirectManager.
@@ -32,9 +31,14 @@ class RedirectManager
     private $dispatcher;
 
     /**
-     * @var Serializer
+     * @var CsvImporter
      */
-    private $serializer;
+    private $csvImporter;
+
+    /**
+     * @var CsvExporter
+     */
+    private $csvExporter;
 
     /**
      * @var classname
@@ -54,16 +58,19 @@ class RedirectManager
     /**
      * Constructor
      *
-     * @param ObjectManager $om
-     * @param Serializer    $serializer
-     * @param string        $class
-     * @param boolean       $statEnabled
+     * @param ObjectManager             $om
+     * @param EventDispatcherInterface  $dispatcher
+     * @param CsvImporter               $csvImporter
+     * @param CsvExporter               $csvExporter
+     * @param string                    $class
+     * @param boolean                   $statEnabled
      */
-    public function __construct(ObjectManager $om, EventDispatcherInterface $dispatcher, Serializer $serializer, $class, $statEnabled = false)
+    public function __construct(ObjectManager $om, EventDispatcherInterface $dispatcher, CsvImporter $csvImporter, CsvExporter $csvExporter, $class, $statEnabled = false)
     {
         $this->om = $om;
         $this->dispatcher = $dispatcher;
-        $this->serializer = $serializer;
+        $this->csvImporter = $csvImporter;
+        $this->csvExporter = $csvExporter;
         $this->class = $class;
         $this->statEnabled = (bool) $statEnabled;
         $this->repository = $om->getRepository($class);
@@ -144,9 +151,12 @@ class RedirectManager
      */
     public function export($path)
     {
-        $records = $this->getRepository()->findAll();
-        $data = $this->serializer->serialize($records, 'text');
-        file_put_contents($path, $data);
+        $collection = $this->getRepository()
+                        ->getAllOrderBySource()
+                        ->getQuery()
+                        ->getResult();
+
+        return $this->csvExporter->export($path, $collection);
     }
 
     /**
@@ -156,66 +166,7 @@ class RedirectManager
      */
     public function import($path)
     {
-        if (!file_exists($path)) {
-            throw new FileLoaderException(sprintf(
-                'The file "%s" doesn\'t exist.',
-                $path
-            ));
-        }
-
-        $content = file_get_contents($path);
-        $lines = explode("\n", $content);
-        if (count($lines) == 0) {
-            throw new FileLoaderException('Empty file');
-        }
-
-        /* Extract columns */
-        $keys = explode("\t", $lines[0]);
-        unset($lines[0]);
-
-        /* Catch if source column exist in header */
-        if (!in_array('source', $keys)) {
-            throw new FieldMissingException('Missing source column');
-        }
-
-        /* Check fields */
-        $metadata = $this->om->getClassMetadata($this->class);
-        foreach ($keys as $key) {
-            if (!$metadata->hasField($key)) {
-                throw new FieldMissingException(sprintf(
-                    'The column with name "%s" does not exist.',
-                    $key
-                ));
-            }
-        }
-
-        foreach ($lines as $line) {
-            $datas = explode("\t", $line);
-            $values = array();
-            foreach ($datas as $id => $data) {
-                $values[$keys[$id]] = $data;
-            }
-            $redirect = $this->serializer->deserialize(
-                        $values,
-                        $this->getClass(),
-                        'text'
-                    );
-            $record = $this->getRepository()
-                        ->findOneBy(array('source' => $redirect->getSource()));
-            if ($record) {
-                $record
-                    ->setDestination($redirect->getDestination())
-                    ->setStatusCode($redirect->getStatusCode());
-            } else {
-                $record = new Redirect();
-                $record
-                    ->setSource($redirect->getSource())
-                    ->setDestination($redirect->getDestination())
-                    ->setStatusCode($redirect->getStatusCode());
-                $this->om->persist($record);
-            }
-        }
-        $this->om->flush();
+        return $this->csvImporter->import($path);
     }
 
     /**

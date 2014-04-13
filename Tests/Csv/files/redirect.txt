@@ -1,0 +1,3 @@
+enabled	source	destination	statusCode
+1	bar	foo	307
+1	foo	bar	307

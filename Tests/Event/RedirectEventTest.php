@@ -20,7 +20,7 @@ class RedirectEventTest extends \PHPUnit_Framework_TestCase
             new Request()
         );
 
-        $this->assertInstanceOf('Funstaff\Bundle\RedirectBundle\Entity\Redirect', $event->getRedirect());
+        $this->assertInstanceOf('Funstaff\Bundle\RedirectBundle\Entity\Redirect', $event->getEntity());
         $this->assertInstanceOf('Symfony\Component\HttpFoundation\Request', $event->getRequest());
     }
 }

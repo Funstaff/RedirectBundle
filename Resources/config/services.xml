@@ -6,20 +6,30 @@
 
     <parameters>
         <parameter key="funstaff_redirect.entity_redirect.class">Funstaff\Bundle\RedirectBundle\Entity\Redirect</parameter>
-        <parameter key="funstaff_redirect.serializer.class">Funstaff\Bundle\RedirectBundle\Serializer\Serializer</parameter>
         <parameter key="funstaff_redirect.redirect_manager.class">Funstaff\Bundle\RedirectBundle\Manager\RedirectManager</parameter>
         <parameter key="funstaff_redirect.redirect_exception_listener.class">Funstaff\Bundle\RedirectBundle\EventListener\RedirectExceptionListener</parameter>
         <parameter key="funstaff_redirect.redirect_request_listener.class">Funstaff\Bundle\RedirectBundle\EventListener\RedirectRequestListener</parameter>
+        <parameter key="funstaff_redirect.csv_importer.class">Funstaff\Bundle\RedirectBundle\Csv\CsvImporter</parameter>
+        <parameter key="funstaff_redirect.csv_exporter.class">Funstaff\Bundle\RedirectBundle\Csv\CsvExporter</parameter>
     </parameters>
 
     <services>
-        <service id="funstaff_redirect.serializer" class="%funstaff_redirect.serializer.class%" public="false" />
         <service id="funstaff_redirect.redirect_manager" class="%funstaff_redirect.redirect_manager.class%">
             <argument type="service" id="doctrine.orm.entity_manager" />
             <argument type="service" id="event_dispatcher" />
-            <argument type="service" id="funstaff_redirect.serializer" />
+            <argument type="service" id="funstaff_redirect.csv_importer" />
+            <argument type="service" id="funstaff_redirect.csv_exporter" />
             <argument>%funstaff_redirect.entity_redirect.class%</argument>
             <argument>%funstaff_redirect.enabled_stat%</argument>
+        </service>
+
+        <service id="funstaff_redirect.csv_importer" class="%funstaff_redirect.csv_importer.class%">
+            <argument type="service" id="doctrine.orm.entity_manager" />
+            <argument>%funstaff_redirect.entity_redirect.class%</argument>
+        </service>
+        <service id="funstaff_redirect.csv_exporter" class="%funstaff_redirect.csv_exporter.class%">
+            <argument type="service" id="doctrine.orm.entity_manager" />
+            <argument>%funstaff_redirect.entity_redirect.class%</argument>
         </service>
     </services>
 </container>

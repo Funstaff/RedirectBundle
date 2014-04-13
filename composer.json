@@ -13,13 +13,11 @@
     "require": {
         "symfony/framework-bundle": "~2.3",
         "symfony/doctrine-bridge": "~2.3",
-        "symfony/serializer": "~2.3",
         "doctrine/orm": ">=2.2.3,<2.4-dev",
         "gedmo/doctrine-extensions": "2.3.*"
     },
     "autoload": {
         "psr-0": { "Funstaff\\Bundle\\RedirectBundle": "" }
     },
-    "target-dir": "Funstaff/Bundle/RedirectBundle",
-    "minimum-stability": "dev"
+    "target-dir": "Funstaff/Bundle/RedirectBundle"
 }

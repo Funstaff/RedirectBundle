@@ -30,11 +30,11 @@ class RedirectEvent extends Event
     }
 
     /**
-     * Get Redirect
+     * Get Entity
      *
      * @return Funstaff\Bundle\RedirectBundle\Entity\Redirect
      */
-    public function getRedirect()
+    public function getEntity()
     {
         return $this->redirect;
     }
