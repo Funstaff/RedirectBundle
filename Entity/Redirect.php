@@ -84,7 +84,7 @@ class Redirect
     public function __construct()
     {
         $this->enabled = true;
-        $this->status = self::STATUS_FOUND;
+        $this->statusCode = self::STATUS_FOUND;
         $this->statCount = 0;
     }
 
