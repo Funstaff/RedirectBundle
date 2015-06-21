@@ -52,14 +52,14 @@ class Redirect
     /**
      * @ORM\Column(name="source", type="string", length=255, unique=true)
      * @Assert\NotNull()
-     * @Assert\length(max=255)
+     * @Assert\Length(max=255)
      */
     protected $source;
 
     /**
      * @ORM\Column(name="destination", type="string", length=255)
      * @Assert\NotNull()
-     * @Assert\length(max=255)
+     * @Assert\Length(max=255)
      */
     protected $destination;
 
