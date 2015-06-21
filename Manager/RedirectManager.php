@@ -56,6 +56,11 @@ class RedirectManager
     private $repository;
 
     /**
+     * @var callable
+     */
+    private $redirectDomainResolver;
+
+    /**
      * Constructor
      *
      * @param ObjectManager             $om
@@ -74,6 +79,9 @@ class RedirectManager
         $this->class = $class;
         $this->statEnabled = (bool) $statEnabled;
         $this->repository = $om->getRepository($class);
+        $this->redirectDomainResolver = function (Request $request) {
+            return $request->getBaseUrl();
+        };
     }
 
     /**
@@ -104,7 +112,7 @@ class RedirectManager
 
         $destination = sprintf(
             '%s/%s',
-            $baseUrl,
+            call_user_func($this->redirectDomainResolver, $request),
             $redirect->getDestination()
         );
 
@@ -167,6 +175,18 @@ class RedirectManager
     public function import($path)
     {
         return $this->csvImporter->import($path);
+    }
+
+    /**
+     * @param callable $resolver A callable that takes a request as a param and returns a domain to redirect to.
+     */
+    public function setRedirectDomainResolver($resolver)
+    {
+        if (!is_callable($resolver)) {
+            throw new \InvalidArgumentException('Redirect domain resolver must be a callable taking a Request object and returning a redirect domain.');
+        }
+
+        $this->redirectDomainResolver = $resolver;
     }
 
     /**
