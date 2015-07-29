@@ -97,7 +97,7 @@ class RedirectManager
         $requestUri = $request->getRequestUri();
 
         $source = mb_eregi_replace($baseUrl, '', $requestUri);
-        $source = ltrim($source, '/');
+        $source = trim($source, '/');
 
         $redirect = $this->getRepository()
                         ->getDestinationFromSource($source);
